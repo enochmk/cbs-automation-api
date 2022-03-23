@@ -5,7 +5,7 @@ class HttpError extends Error {
 
 	constructor(message: string, statusCode: number, system: string = 'BIOSIMREG') {
 		super(message);
-		this.name = this.constructor.name;
+		this.name = message;
 		this.statusCode = statusCode || 500;
 		this.system = system;
 	}

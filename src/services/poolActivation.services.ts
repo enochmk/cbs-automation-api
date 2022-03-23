@@ -4,10 +4,11 @@ import createNumber from '../api/createNumber.api';
 import deleteNumber from '../api/deleteNumber.api';
 import integrationEnquiry from '../api/integrationEnquiry.api';
 import logger from '../utils/loggers/logger';
+import { getSubscriberLifecycle, cleanMSISDNFromArray } from '../helpers/utilities';
+import HttpError from '../utils/errors/HttpError';
 import reportLogger from '../utils/loggers/reportLogger';
 import { runInSeriesAndPararrel } from '../helpers/executeFlow';
 import { RequestInput } from '../validations/request.schema';
-import { cleanMSISDNFromArray, getSubscriberLifecycle } from '../helpers/utilities';
 
 const IN_POOL = '5';
 const PREPAID = '0';
@@ -69,7 +70,9 @@ export const poolActivation = async (data: RequestInput, label = 'poolActivation
 };
 
 export const poolActivateAndReport = async (data: RequestInput, label: string) => {
-	const { message, success } = await poolActivation(data, label);
+	// const { message, success } = await poolActivation(data, label);
+	const message = 'Hiiii';
+	const success = true;
 
 	// const message = 'Testing';
 	// const success = true;
@@ -95,6 +98,13 @@ export const poolActivationBatch = async (data: any, file: any) => {
 	// get clean msisdns from content row by row
 	const msisdns = cleanMSISDNFromArray(newContent);
 
+	///////////where empty array is checked
+	if (!msisdns.length) {
+		const message = `List cannot be empty`;
+		const system = 'Pool activation';
+		return new HttpError(message, 400, system);
+	}
+
 	const requestArray: Array<RequestInput> = msisdns.map((msisdn) => ({
 		requestID: data.requestID,
 		agentID: data.agentID,
@@ -107,7 +117,9 @@ export const poolActivationBatch = async (data: any, file: any) => {
 		poolActivateAndReport
 	);
 
+	const outputDestination = result[0].outputDestination;
+
 	return {
-		destination: result[0]?.outputDestination,
+		destination: outputDestination,
 	};
 };

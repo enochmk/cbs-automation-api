@@ -27,7 +27,7 @@ export const poolActivationBatch = asyncHandler(
 		const file = req.file;
 		const shouldDownload = req.query.download;
 
-		const response = await poolNumberService.poolActivationBatch(data, file);
+		const response: any = await poolNumberService.poolActivationBatch(data, file);
 
 		// condition to download or send response
 		if (shouldDownload === 'true') {
