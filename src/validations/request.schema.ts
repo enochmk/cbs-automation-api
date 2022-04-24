@@ -22,7 +22,7 @@ export const batchRequestSchema = yup.object({
 		filename: schema.name,
 		path: schema.name,
 		size: yup.number().required(),
-		mimetype: yup.string().oneOf(['text/plain']).required(),
+		//		mimetype: yup.string().oneOf(['text/plain']).required(),
 	}),
 });
 
