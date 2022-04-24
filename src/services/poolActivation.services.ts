@@ -8,6 +8,7 @@ import reportLogger from '../utils/loggers/reportLogger';
 import { runInSeriesAndPararrel } from '../helpers/executeFlow';
 import { RequestInput } from '../validations/request.schema';
 import { cleanMSISDNFromArray, getSubscriberLifecycle } from '../helpers/utilities';
+import HttpError from '../utils/errors/HttpError';
 
 const IN_POOL = '5';
 const PREPAID = '0';
@@ -71,9 +72,6 @@ export const poolActivation = async (data: RequestInput, label = 'poolActivation
 export const poolActivateAndReport = async (data: RequestInput, label: string) => {
 	const { message, success } = await poolActivation(data, label);
 
-	// const message = 'Testing';
-	// const success = true;
-
 	const info = {
 		message,
 		status: success,
@@ -94,6 +92,12 @@ export const poolActivationBatch = async (data: any, file: any) => {
 
 	// get clean msisdns from content row by row
 	const msisdns = cleanMSISDNFromArray(newContent);
+
+	if (!msisdns.length) {
+		const message = `List cannot be empty`;
+		const system = 'Pool activation';
+		throw new HttpError(message, 400, system);
+	}
 
 	const requestArray: Array<RequestInput> = msisdns.map((msisdn) => ({
 		requestID: data.requestID,
